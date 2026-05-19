@@ -1,6 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'components/home_page_header.dart';
+import 'components/home_page_card.dart';
+import 'components/consumption_buttons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,12 +11,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int tempoRestante = 3600;
+  final int _metaDiaria = 2000;
+  int _consumoAtual = 900;
+  double _porcentagem = 0.45;
+
+  void _registrarConsumo(int quantidadeML) {
+    setState(() {
+      _consumoAtual += quantidadeML;
+      if (_consumoAtual > _metaDiaria) {
+        _porcentagem = 1.0;
+      } else {
+        _porcentagem = _consumoAtual / _metaDiaria;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    double progresso = 2000;
-
     return Scaffold(
       appBar: AppBar(
         leading: Icon(
@@ -76,96 +88,20 @@ class _HomePageState extends State<HomePage> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        child: Text(
-                          "Olá Usuário, Bom Dia!",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 165, 77, 45),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Container(
-                      height: 150,
-                      width: 150,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const HomePageHeader(),
 
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.asset('assets/man.png', fit: BoxFit.cover),
-                      ),
-                    ),
-                  ],
+                WaterCard(
+                  consumoAtual: _consumoAtual,
+                  metaDiaria: _metaDiaria,
+                  porcentagem: _porcentagem,
                 ),
-              ),
-              Text(
-                'Manenha o foco e hidrate-se!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              Expanded(
-                child: Card(
-                  elevation: 10,
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    height: double.infinity,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.blueAccent,
-                      border: BoxBorder.all(color: Colors.blueAccent, width: 2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          children: [
-                            SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: CircularProgressIndicator(
-                                value: 1,
-                                strokeWidth: 8,
-                                color: Colors.white.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: CircularProgressIndicator(
-                                value: progresso, // Aqui o círculo diminui
-                                strokeWidth: 12,
-                                strokeCap:
-                                    StrokeCap.round, // Pontas arredondadas
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+                ConsumptionButtons(onAddWater: _registrarConsumo),
+              ],
+            ),
           ),
         ),
       ),
