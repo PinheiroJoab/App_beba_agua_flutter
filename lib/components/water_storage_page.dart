@@ -6,11 +6,15 @@ import 'package:beba_agua/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class WaterStorePage extends StatefulWidget {
+  final String nomeUsuario;
+  final int metaDiaria;
+  final String sexoUsuario; // Novo campo para receber o sexo do usuário
+
   const WaterStorePage({
     super.key,
-    required String nomeUsuario,
-    required int metaDiaria,
-    required String sexoUsuario,
+    required this.nomeUsuario,
+    required this.metaDiaria,
+    required this.sexoUsuario,
   });
 
   @override
@@ -19,8 +23,8 @@ class WaterStorePage extends StatefulWidget {
 
 class _WaterStorePageState extends State<WaterStorePage> {
   final int _metaDiaria = 2000;
-  int _consumoAtual = 900;
-  double _porcentagem = 0.45;
+  int _consumoAtual = 0;
+  double _porcentagem = 0.0;
 
   String _ultimoRegistroHora = "--:--";
   int _ultimoRegistroML = 0;
@@ -93,8 +97,8 @@ class _WaterStorePageState extends State<WaterStorePage> {
             child: Column(
               children: [
                 HomePageHeader(
-                  nomeUsuario: nomeUsuario,
-                  sexoUsuario: sexoUsuario,
+                  nomeUsuario: widget.nomeUsuario,
+                  sexoUsuario: widget.sexoUsuario,
                 ), // Passa o sexo para o HomePageHeader
 
                 WaterCard(

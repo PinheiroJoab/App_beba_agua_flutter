@@ -91,6 +91,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Beba Água"),
         backgroundColor: const Color.fromARGB(255, 133, 206, 245),
         elevation: 12,

@@ -2,14 +2,29 @@ import 'package:flutter/material.dart';
 
 class HomePageHeader extends StatelessWidget {
   final String nomeUsuario;
+  final String sexoUsuario; // Novo campo para receber o sexo do usuário
   const HomePageHeader({
     super.key,
     required this.nomeUsuario,
-    required sexoUsuario,
+    required this.sexoUsuario,
   });
 
   @override
   Widget build(BuildContext context) {
+    String imagePath;
+    if (sexoUsuario == "Masculino" ||
+        sexoUsuario == "masculino" ||
+        sexoUsuario == "M" ||
+        sexoUsuario == "m") {
+      imagePath = 'assets/man.png';
+    } else if (sexoUsuario == "Feminino" ||
+        sexoUsuario == "feminino" ||
+        sexoUsuario == "F" ||
+        sexoUsuario == "f") {
+      imagePath = 'assets/woman.png';
+    } else {
+      imagePath = 'assets/water_drop.png';
+    }
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -42,7 +57,7 @@ class HomePageHeader extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.asset('assets/man.png', fit: BoxFit.cover),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
                 ),
               ),
             ],
@@ -50,7 +65,11 @@ class HomePageHeader extends StatelessWidget {
           SizedBox(height: 10),
           Text(
             'Mantenha o foco e hidrate-se!',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 165, 77, 45),
+            ),
           ),
         ],
       ),

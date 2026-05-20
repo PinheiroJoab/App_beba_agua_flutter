@@ -40,6 +40,7 @@ class ConsumptionButtons extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 16),
       ],
     );
   }

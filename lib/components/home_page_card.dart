@@ -105,7 +105,7 @@ class _WaterCardState extends State<WaterCard>
                         color: Color(0xFF1A237E),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       "${widget.consumoAtual}ml",
                       style: TextStyle(
@@ -114,7 +114,7 @@ class _WaterCardState extends State<WaterCard>
                         color: Color(0xFF0288D1),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       "Meta de hoje:\n${widget.metaDiaria}ml",
                       textAlign: TextAlign.center,
