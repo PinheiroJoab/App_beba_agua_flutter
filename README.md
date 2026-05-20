@@ -9,17 +9,15 @@ A new Flutter project.
 
 ## Estrutura do projeto (Porject structure)
 
-lib/
-├── core/
-│   ├── theme/          # Cores, fontes e estilos
-│   └── constants/      # Strings constantes, tamanhos
-├── data/
-│   └── models/         # Modelos de dados (ex: Consumo)
-├── logic/
-│   └── providers/      # Lógica de negócio e estado (ex: WaterTrackProvider)
-├── ui/
-│   ├── pages/          # Suas telas (ex: HomePage)
-│   └── widgets/        # Componentes reutilizáveis
-└── main.dart
-
-
+### lib/
+### ├── core/
+### │   ├── theme/          # Cores, fontes e estilos
+### │   └── constants/      # Strings constantes, tamanhos
+### ├── data/
+### │   └── models/         # Modelos de dados (ex: Consumo)
+### ├── logic/
+### │   └── providers/      # Lógica de negócio e estado (ex: WaterTrackProvider)
+### ├── ui/
+### │   ├── pages/          # Suas telas (ex: HomePage)
+### │   └── widgets/        # Componentes reutilizáveis
+### └── main.dart

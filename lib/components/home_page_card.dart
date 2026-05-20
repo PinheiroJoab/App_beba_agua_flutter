@@ -66,7 +66,7 @@ class _WaterCardState extends State<WaterCard>
         children: [
           SizedBox(
             width: 220,
-            height: 220,
+            height: 230,
             child: Stack(
               alignment: Alignment.center,
               children: [

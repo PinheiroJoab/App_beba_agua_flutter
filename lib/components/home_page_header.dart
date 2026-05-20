@@ -62,7 +62,7 @@ class HomePageHeader extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 30),
           Text(
             'Mantenha o foco e hidrate-se!',
             style: TextStyle(
