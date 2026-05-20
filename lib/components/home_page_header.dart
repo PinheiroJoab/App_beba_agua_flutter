@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class HomePageHeader extends StatelessWidget {
-  const HomePageHeader({super.key});
+  final String nomeUsuario;
+  const HomePageHeader({
+    super.key,
+    required this.nomeUsuario,
+    required sexoUsuario,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +21,7 @@ class HomePageHeader extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   child: Text(
-                    "Olá Usuário, Bom Dia!",
+                    "Olá $nomeUsuario, Bom Dia!",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -42,8 +47,9 @@ class HomePageHeader extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 10),
           Text(
-            'Manenha o foco e hidrate-se!',
+            'Mantenha o foco e hidrate-se!',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
