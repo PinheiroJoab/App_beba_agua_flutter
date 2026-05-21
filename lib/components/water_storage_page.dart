@@ -9,12 +9,13 @@ class WaterStorePage extends StatefulWidget {
   final String nomeUsuario;
   final int metaDiaria;
   final String sexoUsuario; // Novo campo para receber o sexo do usuário
-
+  final int consumoInicial; // Novo campo para receber o consumo diário salvo
   const WaterStorePage({
     super.key,
     required this.nomeUsuario,
     required this.metaDiaria,
     required this.sexoUsuario,
+    required this.consumoInicial,
   });
 
   @override
@@ -22,7 +23,7 @@ class WaterStorePage extends StatefulWidget {
 }
 
 class _WaterStorePageState extends State<WaterStorePage> {
-  final int _metaDiaria = 2000;
+  //final int _metaDiaria = 2000;
   int _consumoAtual = 0;
   double _porcentagem = 0.0;
 
@@ -32,14 +33,14 @@ class _WaterStorePageState extends State<WaterStorePage> {
   int _minutosRestantes = 30; //Exmplo estático
 
   String nomeUsuario = "Usuário";
-  int metaDiaria = 2000;
+  int metaDiaria = 0;
   String sexoUsuario = ""; // Novo campo para armazenar o sexo do usuário
 
   @override
   void initState() {
     super.initState();
-    // Aqui você pode carregar os dados do usuário usando o StorageService
-    // e atualizar o estado com setState. Por exemplo:
+    _consumoAtual = widget.consumoInicial;
+    _porcentagem = _consumoAtual / widget.metaDiaria;
     StorageService.getNome().then((nome) {
       setState(() {
         nomeUsuario = nome;
@@ -53,13 +54,25 @@ class _WaterStorePageState extends State<WaterStorePage> {
     // e atualizar o estado com setState para refletir na UI.
   }
 
-  void _registrarConsumo(int quantidadeML) {
+  @override
+  void didUpdateWidget(covariant WaterStorePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Se a meta diária que veio do Hub for diferente da meta antiga, atualiza o cálculo!
+    if (widget.metaDiaria != oldWidget.metaDiaria) {
+      setState(() {
+        // Recalcula a percentagem com base na nova meta para a onda não quebrar 🌊
+        _porcentagem = _consumoAtual / widget.metaDiaria;
+      });
+    }
+  }
+
+  void _registrarConsumo(int quantidadeML) async {
     setState(() {
       _consumoAtual += quantidadeML;
-      if (_consumoAtual > _metaDiaria) {
+      if (_consumoAtual > widget.metaDiaria) {
         _porcentagem = 1.0;
       } else {
-        _porcentagem = _consumoAtual / _metaDiaria;
+        _porcentagem = _consumoAtual / widget.metaDiaria;
       }
 
       final agora = DateTime.now();
@@ -74,6 +87,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
           "${proximoLembrete.hour.toString().padLeft(2, '0')}:${proximoLembrete.minute.toString().padLeft(2, '0')}";
       _minutosRestantes = 60;
     });
+    await StorageService.salvarConsumoAtual(_consumoAtual);
   }
 
   @override
@@ -103,7 +117,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
 
                 WaterCard(
                   consumoAtual: _consumoAtual,
-                  metaDiaria: _metaDiaria,
+                  metaDiaria: widget.metaDiaria,
                   porcentagem: _porcentagem,
                 ),
                 const SizedBox(height: 24),

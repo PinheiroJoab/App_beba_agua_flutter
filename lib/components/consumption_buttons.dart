@@ -55,7 +55,12 @@ class ConsumptionButtons extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFF03A9F4).withValues(alpha: 0.1),
+              color: const Color.fromARGB(
+                255,
+                1,
+                91,
+                136,
+              ).withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: const Color(0xFF03A9F4).withValues(alpha: 0.2),

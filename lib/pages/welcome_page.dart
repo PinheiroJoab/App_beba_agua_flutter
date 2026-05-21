@@ -16,6 +16,7 @@ class _WelcomePageState extends State<WelcomePage> {
   final _idadeController = TextEditingController();
   final _pesoController = TextEditingController();
   String? _sexoSelecionado;
+  int _previsaoMeta = 0;
 
   @override
   void dispose() {
@@ -34,6 +35,7 @@ class _WelcomePageState extends State<WelcomePage> {
       final metaCalculada = (peso * 35).round();
 
       // Envia os dados coletados de volta para o app principal
+      // Dentro de welcome_page.dart, mude o widget.onSetupComplete para enviar o mapa completo:
       widget.onSetupComplete({
         'nome': _nomeController.text.trim(),
         'sobrenome': _sobrenomeController.text.trim(),
@@ -154,10 +156,50 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                         validator: (v) =>
                             v == null || v.isEmpty ? "Obrigatório" : null,
+                        onChanged: (valor) {
+                          if (valor!.isNotEmpty) {
+                            final peso = double.tryParse(
+                              valor.replaceAll(',', '.'),
+                            );
+                            if (peso != null) {
+                              setState(() {
+                                _previsaoMeta = (peso * 35).round();
+                              });
+                              return;
+                            }
+                          }
+                          setState(() {
+                            _previsaoMeta = 0;
+                          });
+                        },
                       ),
                     ),
                   ],
                 ),
+                if (_previsaoMeta > 0) ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0288D1).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.opacity, color: Color(0xFF0288D1)),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Sua meta diária: $_previsaoMeta ml",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 40),
 
                 ElevatedButton(
@@ -189,11 +231,13 @@ class _WelcomePageState extends State<WelcomePage> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
     required String? Function(String?)? validator,
+    ValueChanged<String?>? onChanged,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF0288D1)),

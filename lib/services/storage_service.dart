@@ -1,46 +1,81 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  // Salva os dados do usuário, incluindo o sexo
-  static Future<void> salvarUsuario(
-    String nome,
-    int metaDiaria,
-    String sexo,
-  ) async {
+  static Future<void> salvarUsuario({
+    required String nome,
+    required String sobrenome,
+    required String sexo,
+    required int idade,
+    required double peso,
+    required int metaDiaria,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('usuario_nome', nome);
+    await prefs.setString('usuario_sobrenome', sobrenome);
+    await prefs.setString('usuario_sexo', sexo);
+    await prefs.setInt('usuario_idade', idade);
+    await prefs.setDouble('usuario_peso', peso);
     await prefs.setInt('meta_diaria', metaDiaria);
-    await prefs.setString('usuario_sexo', sexo); // Novo método 💡
     await prefs.setBool('cadastro_completo', true);
   }
 
-  // Verifica se o usuário já tem o cadastro salvo
   static Future<bool> isCadastroCompleto() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('cadastro_completo') ?? false;
   }
 
-  // Recupera o nome salvo
   static Future<String> getNome() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('usuario_nome') ?? "Usuário";
   }
 
-  // Recupera a meta salva
-  static Future<int> getMeta() async {
+  static Future<String> getSobrenome() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('meta_diaria') ?? 2000;
+    return prefs.getString('usuario_sobrenome') ?? "";
   }
 
-  // Recupera o sexo salvo (retorna vazio se não achar) 💡
   static Future<String> getSexo() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('usuario_sexo') ?? "";
   }
 
-  // Método para limpar dados
+  static Future<int> getIdade() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('usuario_idade') ?? 0;
+  }
+
+  static Future<double> getPeso() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble('usuario_peso') ?? 0.0;
+  }
+
+  static Future<int> getMeta() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('meta_diaria') ?? 2000;
+  }
+
   static Future<void> limparDados() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  static Future<void> salvarConsumoAtual(int ml) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('consumo_atual', ml);
+  }
+
+  static Future<int> getConsumoAtual() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('consumo_atual') ?? 0;
+  }
+
+  static Future<void> salvarUltimaData(String data) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ultima_data_registro', data);
+  }
+
+  static Future<String> getUltimaData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('ultima_data_registro') ?? "";
   }
 }

@@ -1,4 +1,7 @@
 import 'package:beba_agua/components/water_storage_page.dart';
+import 'package:beba_agua/pages/badges_page.dart';
+import 'package:beba_agua/pages/history_page.dart';
+import 'package:beba_agua/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'pages/welcome_page.dart';
 import 'services/storage_service.dart'; // Importe o serviço criado
@@ -17,16 +20,62 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
 
   String _usuarioNome = "";
   int _metaCalculada = 2000;
-  String _usuarioSexo = ""; // Novo campo para armazenar o sexo do usuário
+  String _usuarioSexo = "";
+
+  int _consumoDiarioSalvo =
+      0; // Novo campo para armazenar o consumo diário salvo
+
+  Future<void> _carregarDadosIniciais() async {
+    final nome = await StorageService.getNome();
+    final meta = await StorageService.getMeta();
+    final sexo = await StorageService.getSexo();
+
+    // 🎯 LÓGICA DO RESET AUTOMÁTICO DO DIA 📅
+    final dataAtual = DateTime.now().toString().split(
+      ' ',
+    )[0]; // Pega apenas "2026-05-20"
+    final ultimaDataSalva = await StorageService.getUltimaData();
+    int consumoRecuperado = 0;
+
+    if (ultimaDataSalva == dataAtual) {
+      // Se ainda estamos no mesmo dia, recupera a água que já bebeu
+      consumoRecuperado = await StorageService.getConsumoAtual();
+    } else {
+      // Se mudou o dia (ou é o primeiro acesso), zera o consumo e atualiza a data no disco
+      await StorageService.salvarConsumoAtual(0);
+      await StorageService.salvarUltimaData(dataAtual);
+      consumoRecuperado = 0;
+    }
+
+    setState(() {
+      _usuarioNome = nome;
+      _metaCalculada = meta;
+      _usuarioSexo = sexo;
+      _consumoDiarioSalvo = consumoRecuperado; // Guarda o valor correto
+      _carregando = false;
+    });
+  }
+
+  Future<void> recarregarDadosDoStorage() async {
+    final nome = await StorageService.getNome();
+    final meta = await StorageService.getMeta();
+    final sexo = await StorageService.getSexo();
+
+    setState(() {
+      _usuarioNome = nome;
+      _metaCalculada = meta;
+      _usuarioSexo = sexo;
+    });
+  } // Novo campo para armazenar o sexo do usuário
 
   @override
   void initState() {
     super.initState();
-    _verificarProgressoUsuario();
+    _carregarDadosIniciais();
   }
 
   // Busca as informações gravadas no celular
-  Future<void> _verificarProgressoUsuario() async {
+  /*Future<void> _verificarProgressoUsuario() async {
     final completo = await StorageService.isCadastroCompleto();
     if (completo) {
       final nome = await StorageService.getNome();
@@ -42,7 +91,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
     setState(() {
       _carregando = false; // Finaliza o estado de carregamento
     });
-  }
+  }*/
 
   // Executado quando o usuário clica no botão da WelcomePage
   Future<void> _configurarUsuarioInicial(Map<String, dynamic> dados) async {
@@ -51,7 +100,14 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
     final sexo = dados['sexo']; // Novo campo de sexo
 
     // Grava permanentemente no celular usando nosso serviço
-    await StorageService.salvarUsuario(nome, meta, sexo);
+    await StorageService.salvarUsuario(
+      nome: dados['nome'],
+      sobrenome: dados['sobrenome'],
+      sexo: dados['sexo'],
+      idade: dados['idade'],
+      peso: dados['peso'],
+      metaDiaria: dados['metaDiaria'],
+    );
 
     setState(() {
       _usuarioNome = nome;
@@ -81,18 +137,25 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
         nomeUsuario: _usuarioNome,
         metaDiaria: _metaCalculada,
         sexoUsuario: _usuarioSexo,
-      ), // Passa o sexo para a WaterStorePage
-      const Center(child: Text("Histórico")),
-      const Center(child: Text("Conquistas")),
-      const Center(
-        child: Text("Ajustes"),
-      ), // Dica: futuramente você pode ler do storage aqui também!
+        consumoInicial:
+            _consumoDiarioSalvo, // Passa o consumo diário salvo para a WaterStorePage
+      ),
+      const Center(child: HistoryPage()),
+      const Center(child: BadgesPage()),
+      SettingsPage(onDadosAtualizados: recarregarDadosDoStorage),
     ];
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Beba Água"),
+        title: const Text(
+          "Beba Água",
+          style: TextStyle(
+            fontSize: 26,
+            color: Color.fromARGB(255, 2, 62, 110),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color.fromARGB(255, 133, 206, 245),
         elevation: 12,
       ),
