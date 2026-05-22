@@ -22,7 +22,7 @@ class ReminderCard extends StatelessWidget {
         children: [
           // 1. Linha do Último Registro
           Text(
-            "Último registro: $ultimoRegistroHora - ${ultimoRegistroML}ml",
+            "Último registro: $ultimoRegistroHora",
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,

@@ -25,6 +25,16 @@ class HomePageHeader extends StatelessWidget {
     } else {
       imagePath = 'assets/water_drop.png';
     }
+
+    String cumprimento;
+    if (DateTime.now().hour >= 4 && DateTime.now().hour < 12) {
+      cumprimento = "Bom Dia";
+    } else if (DateTime.now().hour >= 12 && DateTime.now().hour < 18) {
+      cumprimento = "Boa Tarde";
+    } else {
+      cumprimento = "Boa Noite";
+    }
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -36,7 +46,7 @@ class HomePageHeader extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   child: Text(
-                    "Olá $nomeUsuario, Bom Dia!",
+                    "Olá $nomeUsuario, $cumprimento!",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

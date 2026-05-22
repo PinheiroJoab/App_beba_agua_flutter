@@ -21,30 +21,42 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
   String _usuarioNome = "";
   int _metaCalculada = 2000;
   String _usuarioSexo = "";
-
   int _consumoDiarioSalvo =
       0; // Novo campo para armazenar o consumo diário salvo
+  String _ultimoRegistroSalvo =
+      "--:-- - 0ml"; // Novo campo para armazenar o último registro salvo
+  @override
+  void initState() {
+    super.initState();
+    _carregarDadosIniciais();
+  }
 
   Future<void> _carregarDadosIniciais() async {
+    setState(() {
+      _carregando = true;
+    });
+
     final nome = await StorageService.getNome();
     final meta = await StorageService.getMeta();
     final sexo = await StorageService.getSexo();
 
     // 🎯 LÓGICA DO RESET AUTOMÁTICO DO DIA 📅
-    final dataAtual = DateTime.now().toString().split(
-      ' ',
-    )[0]; // Pega apenas "2026-05-20"
+    final dataAtual = DateTime.now().toString().split(' ')[0];
     final ultimaDataSalva = await StorageService.getUltimaData();
     int consumoRecuperado = 0;
+    String ultimoRegistroRecuperado = "--:-- - 0ml";
 
     if (ultimaDataSalva == dataAtual) {
-      // Se ainda estamos no mesmo dia, recupera a água que já bebeu
+      // Se ainda estamos no mesmo dia, recupera a água que já bebeu e o ultimo registro
       consumoRecuperado = await StorageService.getConsumoAtual();
+      ultimoRegistroRecuperado = await StorageService.getTextoUltimoRegistro();
     } else {
       // Se mudou o dia (ou é o primeiro acesso), zera o consumo e atualiza a data no disco
       await StorageService.salvarConsumoAtual(0);
       await StorageService.salvarUltimaData(dataAtual);
+      await StorageService.salvarTextoUltimoRegistro("--:-- - 0ml");
       consumoRecuperado = 0;
+      ultimoRegistroRecuperado = "--:-- - 0ml";
     }
 
     setState(() {
@@ -52,6 +64,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       _metaCalculada = meta;
       _usuarioSexo = sexo;
       _consumoDiarioSalvo = consumoRecuperado; // Guarda o valor correto
+      _ultimoRegistroSalvo = ultimoRegistroRecuperado; // Guarda o valor correto
       _carregando = false;
     });
   }
@@ -67,12 +80,6 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       _usuarioSexo = sexo;
     });
   } // Novo campo para armazenar o sexo do usuário
-
-  @override
-  void initState() {
-    super.initState();
-    _carregarDadosIniciais();
-  }
 
   // Busca as informações gravadas no celular
   /*Future<void> _verificarProgressoUsuario() async {
@@ -128,7 +135,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       );
     }
 
-    if (!_cadastroConcluido) {
+    if (_cadastroConcluido) {
       return WelcomePage(onSetupComplete: _configurarUsuarioInicial);
     }
 
@@ -139,6 +146,8 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
         sexoUsuario: _usuarioSexo,
         consumoInicial:
             _consumoDiarioSalvo, // Passa o consumo diário salvo para a WaterStorePage
+        ultimoRegistroInicial:
+            _ultimoRegistroSalvo, // Passa o último registro salvo para a WaterStorePage
       ),
       const Center(child: HistoryPage()),
       const Center(child: BadgesPage()),

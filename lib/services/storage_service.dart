@@ -78,4 +78,16 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('ultima_data_registro') ?? "";
   }
+
+  // 🎯 Salva o texto do último registro (Ex: "22:45 - 200ml")
+  static Future<void> salvarTextoUltimoRegistro(String texto) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ultimo_registro_texto', texto);
+  }
+
+  // 🎯 Recupera o texto do último registro (Retorna "--:-- - 0ml" se for o primeiro acesso)
+  static Future<String> getTextoUltimoRegistro() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('ultimo_registro_texto') ?? "--:-- - 0ml";
+  }
 }

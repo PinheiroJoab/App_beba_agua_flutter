@@ -10,12 +10,16 @@ class WaterStorePage extends StatefulWidget {
   final int metaDiaria;
   final String sexoUsuario; // Novo campo para receber o sexo do usuário
   final int consumoInicial; // Novo campo para receber o consumo diário salvo
+  final String
+  ultimoRegistroInicial; // Novo campo para receber o último registro salvo
+
   const WaterStorePage({
     super.key,
     required this.nomeUsuario,
     required this.metaDiaria,
     required this.sexoUsuario,
     required this.consumoInicial,
+    required this.ultimoRegistroInicial,
   });
 
   @override
@@ -29,8 +33,8 @@ class _WaterStorePageState extends State<WaterStorePage> {
 
   String _ultimoRegistroHora = "--:--";
   int _ultimoRegistroML = 0;
-  String _proximoLembreteHora = "11:15"; //Exmplo estático
-  int _minutosRestantes = 30; //Exmplo estático
+  String _proximoLembreteHora = ""; //Exmplo estático
+  int _minutosRestantes = 0; //Exmplo estático
 
   String nomeUsuario = "Usuário";
   int metaDiaria = 0;
@@ -41,6 +45,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
     super.initState();
     _consumoAtual = widget.consumoInicial;
     _porcentagem = _consumoAtual / widget.metaDiaria;
+    _ultimoRegistroHora = widget.ultimoRegistroInicial;
     StorageService.getNome().then((nome) {
       setState(() {
         nomeUsuario = nome;
@@ -67,6 +72,11 @@ class _WaterStorePageState extends State<WaterStorePage> {
   }
 
   void _registrarConsumo(int quantidadeML) async {
+    final agora = DateTime.now();
+    final hora = agora.hour.toString().padLeft(2, '0');
+    final minuto = agora.minute.toString().padLeft(2, '0');
+    final novoTextoRegistro = "$hora:$minuto - ${quantidadeML}ml";
+
     setState(() {
       _consumoAtual += quantidadeML;
       if (_consumoAtual > widget.metaDiaria) {
@@ -74,12 +84,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
       } else {
         _porcentagem = _consumoAtual / widget.metaDiaria;
       }
-
-      final agora = DateTime.now();
-      final hora = agora.hour.toString().padLeft(2, '0');
-      final minuto = agora.minute.toString().padLeft(2, '0');
-      _ultimoRegistroHora = "$hora:$minuto";
-      _ultimoRegistroML = quantidadeML;
+      _ultimoRegistroHora = novoTextoRegistro;
 
       // Lógica para calcular o próximo lembrete (exemplo estático)
       final proximoLembrete = agora.add(const Duration(hours: 1));
@@ -88,6 +93,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
       _minutosRestantes = 60;
     });
     await StorageService.salvarConsumoAtual(_consumoAtual);
+    await StorageService.salvarTextoUltimoRegistro(novoTextoRegistro);
   }
 
   @override
