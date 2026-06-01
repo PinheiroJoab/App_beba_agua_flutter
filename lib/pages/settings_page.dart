@@ -88,6 +88,20 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     }
   }
+  // 3. Função para limpar os dados (apenas para testes, pode ser implementada depois de um jeito mais seguro) 🧹
+  /*Future<void> _limparDadosTemporarios() async {
+    await StorageService.limparDados();
+    widget.onDadosAtualizados();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Dados apagados para teste. O app voltará ao início.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -232,6 +246,24 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Botão para limpar os dados salvos (apenas para testes, pode ser implementado depois de um jeito mais seguro)
+                /* OutlinedButton(
+                  onPressed: _limparDadosTemporarios,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFB71C1C),
+                    side: const BorderSide(color: Color(0xFFB71C1C)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    "Limpar dados salvos",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),*/
               ],
             ),
           ),

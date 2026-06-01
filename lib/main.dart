@@ -1,7 +1,10 @@
+import 'package:beba_agua/services/notification_service.dart';
 import 'package:beba_agua/tela_inicial.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Garante que o Flutter esteja pronto para inicializar plugins
+  await NotificationService.inicializar(); // Inicializa o serviço de notificações
   runApp(const MyApp());
 }
 

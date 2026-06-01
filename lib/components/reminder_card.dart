@@ -53,7 +53,7 @@ class ReminderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Em $minutosRestantes minutos ($proximoLembreteHora)",
+                  "Te avisarei às $proximoLembreteHora",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

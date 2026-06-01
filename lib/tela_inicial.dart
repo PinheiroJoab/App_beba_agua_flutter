@@ -36,6 +36,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       _carregando = true;
     });
 
+    final cadastroCompleto = await StorageService.isCadastroCompleto();
     final nome = await StorageService.getNome();
     final meta = await StorageService.getMeta();
     final sexo = await StorageService.getSexo();
@@ -65,11 +66,13 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       _usuarioSexo = sexo;
       _consumoDiarioSalvo = consumoRecuperado; // Guarda o valor correto
       _ultimoRegistroSalvo = ultimoRegistroRecuperado; // Guarda o valor correto
+      _cadastroConcluido = cadastroCompleto;
       _carregando = false;
     });
   }
 
   Future<void> recarregarDadosDoStorage() async {
+    final cadastroCompleto = await StorageService.isCadastroCompleto();
     final nome = await StorageService.getNome();
     final meta = await StorageService.getMeta();
     final sexo = await StorageService.getSexo();
@@ -78,6 +81,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       _usuarioNome = nome;
       _metaCalculada = meta;
       _usuarioSexo = sexo;
+      _cadastroConcluido = cadastroCompleto;
     });
   } // Novo campo para armazenar o sexo do usuário
 
@@ -135,7 +139,7 @@ class _MainNavigationHubState extends State<MainNavigationHub> {
       );
     }
 
-    if (_cadastroConcluido) {
+    if (!_cadastroConcluido) {
       return WelcomePage(onSetupComplete: _configurarUsuarioInicial);
     }
 

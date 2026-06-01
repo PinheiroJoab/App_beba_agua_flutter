@@ -2,16 +2,17 @@ import 'package:beba_agua/components/consumption_buttons.dart';
 import 'package:beba_agua/components/home_page_card.dart';
 import 'package:beba_agua/components/home_page_header.dart';
 import 'package:beba_agua/components/reminder_card.dart';
+import 'package:beba_agua/services/counter_down.dart';
+
 import 'package:beba_agua/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 class WaterStorePage extends StatefulWidget {
   final String nomeUsuario;
   final int metaDiaria;
-  final String sexoUsuario; // Novo campo para receber o sexo do usuário
-  final int consumoInicial; // Novo campo para receber o consumo diário salvo
-  final String
-  ultimoRegistroInicial; // Novo campo para receber o último registro salvo
+  final String sexoUsuario;
+  final int consumoInicial;
+  final String ultimoRegistroInicial;
 
   const WaterStorePage({
     super.key,
@@ -27,18 +28,18 @@ class WaterStorePage extends StatefulWidget {
 }
 
 class _WaterStorePageState extends State<WaterStorePage> {
-  //final int _metaDiaria = 2000;
   int _consumoAtual = 0;
   double _porcentagem = 0.0;
 
   String _ultimoRegistroHora = "--:--";
   int _ultimoRegistroML = 0;
-  String _proximoLembreteHora = ""; //Exmplo estático
-  int _minutosRestantes = 0; //Exmplo estático
+  String _proximoLembreteHora = "";
+  int _minutosRestantes = 0;
+  ContadorController? _contadorController;
 
   String nomeUsuario = "Usuário";
   int metaDiaria = 0;
-  String sexoUsuario = ""; // Novo campo para armazenar o sexo do usuário
+  String sexoUsuario = "";
 
   @override
   void initState() {
@@ -56,16 +57,14 @@ class _WaterStorePageState extends State<WaterStorePage> {
         metaDiaria = meta;
       });
     });
-    // e atualizar o estado com setState para refletir na UI.
   }
 
   @override
   void didUpdateWidget(covariant WaterStorePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Se a meta diária que veio do Hub for diferente da meta antiga, atualiza o cálculo!
+
     if (widget.metaDiaria != oldWidget.metaDiaria) {
       setState(() {
-        // Recalcula a percentagem com base na nova meta para a onda não quebrar 🌊
         _porcentagem = _consumoAtual / widget.metaDiaria;
       });
     }
@@ -85,15 +84,25 @@ class _WaterStorePageState extends State<WaterStorePage> {
         _porcentagem = _consumoAtual / widget.metaDiaria;
       }
       _ultimoRegistroHora = novoTextoRegistro;
-
-      // Lógica para calcular o próximo lembrete (exemplo estático)
-      final proximoLembrete = agora.add(const Duration(hours: 1));
       _proximoLembreteHora =
-          "${proximoLembrete.hour.toString().padLeft(2, '0')}:${proximoLembrete.minute.toString().padLeft(2, '0')}";
+          "${agora.add(const Duration(minutes: 60)).hour.toString().padLeft(2, '0')}:${agora.add(const Duration(minutes: 60)).minute.toString().padLeft(2, '0')}";
       _minutosRestantes = 60;
+
+      // Lógica para o contador regressivo, será implementado futuramente
+
+      /*if (_minutosRestantes > 0) {
+        _minutosRestantes -= 1;
+      } else {
+        _minutosRestantes = 0;
+      }*/
     });
     await StorageService.salvarConsumoAtual(_consumoAtual);
     await StorageService.salvarTextoUltimoRegistro(novoTextoRegistro);
+
+    _contadorController?.parar();
+    _contadorController?.dispose();
+    _contadorController = ContadorController(tempoInicial: 60);
+    await _contadorController!.iniciar();
   }
 
   @override
@@ -119,7 +128,7 @@ class _WaterStorePageState extends State<WaterStorePage> {
                 HomePageHeader(
                   nomeUsuario: widget.nomeUsuario,
                   sexoUsuario: widget.sexoUsuario,
-                ), // Passa o sexo para o HomePageHeader
+                ),
 
                 WaterCard(
                   consumoAtual: _consumoAtual,
@@ -142,5 +151,12 @@ class _WaterStorePageState extends State<WaterStorePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _contadorController?.parar();
+    _contadorController?.dispose();
+    super.dispose();
   }
 }
